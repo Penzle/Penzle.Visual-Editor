@@ -26,34 +26,14 @@ export class Util {
 	}
 }
 
-// if (!Element.prototype.matches) {
-// 	Element.prototype.matches =
-// 		(Element.prototype as any)['msMatchesSelector'] || (Element.prototype as any)['webkitMatchesSelector'];
-// }
+export function getAttribute(dom: Node | string | undefined, attributeName: string): string | null {
+	return (dom as HTMLElement)?.getAttribute(attributeName);
+}
 
-// if (!Element.prototype.matches) {
-// 	Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
-// }
+export function setAttribute(dom: Node | string | undefined, attributeName: string, value: any): void {
+	(dom as HTMLElement)?.setAttribute(attributeName, value);
+}
 
-// if (!Element.prototype.closest) {
-// 	Element.prototype.closest = function (s: string) {
-// 		var el: Element | null = this;
-
-// 		do {
-// 			if (Element.prototype.matches.call(el, s)) return el;
-// 			el = el.parentElement || (el.parentNode as Element);
-// 		} while (el !== null && el.nodeType === 1);
-// 		return null;
-// 	};
-// }
-
-// let isPreview: boolean; // This variable needs to be initialized or assigned before being used
-
-// class ProjectSettings {
-// 	static setupProjectSettings(): void {
-// 		// $penzle.config.lang = $penzle.UTIL.getUrlParameter('lang');
-// 		// Assuming $penzle.config.lang is a string. The $penzle object is not defined in your provided code
-// 	}
-// }
-
-// export { UTIL, isPreview, ProjectSettings };
+export function getNodeValue(dom: Node | undefined): string | null {
+	return (dom as HTMLElement)?.innerHTML;
+}

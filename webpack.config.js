@@ -35,6 +35,15 @@ module.exports = (env, args) => ({
 				options: {
 					configFile: require.resolve('./tsconfig.webpack.json')
 				}
+			},
+			{
+				test: /\.css$/, // Add this rule
+				use: ['style-loader', 'css-loader']
+			},
+			// Add this rule if you're using Sass
+			{
+				test: /\.scss$/,
+				use: ['style-loader', 'css-loader', 'sass-loader']
 			}
 		]
 	},
