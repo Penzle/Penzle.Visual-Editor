@@ -1,13 +1,15 @@
-import { Events, IncomingMessage, TagAttributes } from '../models';
+import { sendMessageToEditor, setNodeValue } from '../utilities';
+import { Events, IncomingMessage, Message, TagAttributes } from '../models';
 
 export class LiveUpdates {
-	receivedMessage(message: IncomingMessage): void {
+	receivedIncomingMessage(message: IncomingMessage): void {
 		if (message.event === Events.EntryUpdate) {
-			const element = this.selectElementByDataField(message.field);
-			if (element) {
-				element.innerHTML = message.value;
-			}
+			setNodeValue(this.selectElementByDataField(message.field), message.value);
 		}
+	}
+
+	receivedOutgoingMessage(message: Message): void {
+		sendMessageToEditor(message);
 	}
 
 	private selectElementByDataField(field: string): Element | null {

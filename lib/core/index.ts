@@ -1,2 +1,2 @@
-export * from './editor-mode';
+export * from './editor-tooltip';
 export * from './editor-settings';

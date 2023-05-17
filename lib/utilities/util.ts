@@ -37,3 +37,10 @@ export function setAttribute(dom: Node | string | undefined, attributeName: stri
 export function getNodeValue(dom: Node | undefined): string | null {
 	return (dom as HTMLElement)?.innerHTML;
 }
+
+export function setNodeValue(dom: Node | null | undefined, value: any): void {
+	const element = dom as HTMLElement;
+	if (element) {
+		element.innerHTML = value;
+	}
+}

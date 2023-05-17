@@ -1,9 +1,11 @@
-import { getAttribute, getNodeValue, sendMessageToEditor, setAttribute } from '../utilities';
+import { getAttribute, getNodeValue, setAttribute, setNodeValue } from '../utilities';
 import {
 	BUTTON_APPLY_ID,
 	BUTTON_CANCEL_ID,
 	EntryUpdateMessage,
 	Events,
+	FieldClickMessage,
+	Message,
 	TOOLTIP_IDENTIFY,
 	TOOLTIP_OVERLAY_ID,
 	TOOLTIP_TEXT_IDENTIFY,
@@ -12,16 +14,35 @@ import {
 } from '../models';
 import { TooltipElement } from '../models/tooltip-element.model';
 
-export class EditorMode {
-	activeField: HTMLElement | undefined;
+type SaveCallback = (message: Message) => void;
+type EditCallback = (message: Message) => void;
 
-	selectedField: HTMLElement | undefined;
+export class EditorTooltip {
+	private onSaveCallback?: SaveCallback;
+
+	private onEditCallback?: EditCallback;
+
+	private activeField: HTMLElement | undefined;
+
+	private selectedField: HTMLElement | undefined;
+
+	private activeFieldValue: any | undefined;
 
 	tooltip: TooltipElement;
+
+	isPageEditingMode = false;
 
 	constructor() {
 		this.tooltip = new TooltipElement();
 		this.createTooltip();
+	}
+
+	bindOnSave(callback: SaveCallback): void {
+		this.onSaveCallback = callback;
+	}
+
+	bindOnEdit(callback: EditCallback): void {
+		this.onEditCallback = callback;
 	}
 
 	private createTooltip(): void {
@@ -56,7 +77,7 @@ export class EditorMode {
 		return html;
 	}
 
-	bindEvents(): void {
+	private bindEvents(): void {
 		const cancel: HTMLElement | null = document.getElementById(BUTTON_CANCEL_ID);
 		const save: HTMLElement | null = document.getElementById(BUTTON_APPLY_ID);
 		const edit: HTMLElement | null = document.querySelector(`#${TOOLTIP_IDENTIFY} .${TOOLTIP_TITLE_IDENTIFY} svg`);
@@ -79,14 +100,25 @@ export class EditorMode {
 	}
 
 	private leaveContentEditMode(): void {
+		setNodeValue(this.selectedField, this.activeFieldValue);
 		this.tooltip.removeEditMode();
 		this.toggleInPageEditing(false);
 		this.deselectField();
 	}
 
 	private enterContentEditMode(): void {
-		if (this.activeField) {
+		if (this.activeField == null) return;
+
+		if (this.isPageEditingMode) {
+			this.onEditCallback?.({
+				event: Events.FieldClicked,
+				field: getAttribute(this.selectedField, TagAttributes.FIELD_NAME),
+				entryId: getAttribute(this.selectedField, TagAttributes.ENTRY_ID),
+				language: getAttribute(this.selectedField, TagAttributes.LANGUAGE)
+			} as FieldClickMessage);
+		} else {
 			this.selectedField = this.activeField;
+			this.activeFieldValue = getNodeValue(this.selectedField);
 			this.handleFieldType();
 		}
 	}
@@ -102,8 +134,8 @@ export class EditorMode {
 		}
 	}
 
-	saveContent(): void {
-		sendMessageToEditor({
+	private saveContent(): void {
+		this.onSaveCallback?.({
 			event: Events.EntryUpdate,
 			field: getAttribute(this.selectedField, TagAttributes.FIELD_NAME),
 			entryId: getAttribute(this.selectedField, TagAttributes.ENTRY_ID),
