@@ -1,10 +1,17 @@
-import { sendMessageToEditor, setNodeValue } from '../utilities';
+import { isImageElement, sendMessageToEditor, setNewImageSource, setNodeValue } from '../utilities';
 import { Events, IncomingMessage, Message, TagAttributes } from '../models';
 
 export class LiveUpdates {
 	receivedIncomingMessage(message: IncomingMessage): void {
 		if (message.event === Events.EntryUpdate) {
-			setNodeValue(this.selectElementByDataField(message.field), message.value);
+			const element = this.selectElementByDataField(message.field, message.entryId);
+			if (!element) return;
+
+			if (isImageElement(element)) {
+				setNewImageSource(element, message.value);
+			} else {
+				setNodeValue(this.selectElementByDataField(message.field, message.entryId), message.value);
+			}
 		}
 	}
 
@@ -12,7 +19,9 @@ export class LiveUpdates {
 		sendMessageToEditor(message);
 	}
 
-	private selectElementByDataField(field: string): Element | null {
-		return document.querySelector(`[${TagAttributes.FIELD_NAME}="${field}"]`);
+	private selectElementByDataField(field: string, entryId: string): Element | null {
+		return document.querySelector(
+			`[${TagAttributes.FIELD_NAME}="${field}"][${TagAttributes.ENTRY_ID}="${entryId}"]`
+		);
 	}
 }

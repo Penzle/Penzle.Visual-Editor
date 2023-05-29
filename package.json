@@ -1,5 +1,5 @@
 {
-    "name": "@penzle/experience-editor",
+    "name": "@penzle/visual-editor",
     "version": "0.0.1",
     "description": "Easy editing features that guide in-page editing to build and deliver amazing content experiences in no time.",
     "main": "./dist/cjs/index.js",
@@ -26,17 +26,18 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Penzle/Penzle.Experience-Editor.git"
+        "url": "git+https://github.com/Penzle/Penzle.Visual-Editor.git"
     },
     "keywords": [
-        "Penzle"
+        "Penzle",
+        "Penzle Visual Editor"
     ],
     "author": "Admir",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/Penzle/Penzle.Experience-Editor/issues"
+        "url": "https://github.com/Penzle/Penzle.Visual-Editor/issues"
     },
-    "homepage": "https://github.com/Penzle/Penzle.Experience-Editor#readme",
+    "homepage": "https://github.com/Penzle/Penzle.Visual-Editor#readme",
     "devDependencies": {
         "@types/jasmine": "4.3.1",
         "@types/node": "18.11.18",

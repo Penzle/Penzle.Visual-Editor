@@ -1,9 +1,9 @@
-import { Message, OutgoingMessage } from '../models';
+import { EditorSource, Message, OutgoingMessage } from '../models';
 
 export function sendMessageToEditor(message: Message): void {
 	const outgoingMessage: OutgoingMessage = {
 		...message,
-		from: 'xp-editor',
+		from: EditorSource.VisualEditor,
 		location: window.location.href
 	};
 

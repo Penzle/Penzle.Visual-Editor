@@ -7,7 +7,7 @@ const isProd = (args) => {
 
 const outputFolder = (args) => path.resolve(__dirname, 'dist/bundles');
 const bundleFilename = (args) => {
-	return 'penzle-experience-editor' + (isProd(args) ? '.min.js' : '.js');
+	return 'penzle-visual-editor' + (isProd(args) ? '.min.js' : '.js');
 };
 
 module.exports = (env, args) => ({
@@ -23,7 +23,7 @@ module.exports = (env, args) => ({
 		filename: bundleFilename(args),
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
-		library: 'penzleExperienceEditor'
+		library: 'penzleVisualEditor'
 	},
 	devtool: 'source-map',
 	module: {

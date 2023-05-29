@@ -1,31 +1,3 @@
-export class Util {
-	static documentReady(fn: () => void): void {
-		if (document.readyState === 'complete') {
-			// see if DOM is already available
-			fn();
-		} else {
-			document.addEventListener('DOMContentLoaded', fn);
-		}
-	}
-
-	static removeElementsByClass(className: string): void {
-		const elements = Array.from(document.getElementsByClassName(className));
-		while (elements.length > 0) {
-			elements[0].parentNode?.removeChild(elements[0]);
-		}
-	}
-
-	static getUrlParameter(name: string, url: string = window.location.href): string | null {
-		const nameValue = name.replace(/[\[\]]/g, '\\$&');
-		const regex = new RegExp('[?&]' + nameValue + '(=([^&#]*)|&|#|$)');
-		const results = regex.exec(url);
-
-		if (!results) return null;
-		if (!results[2]) return '';
-		return decodeURIComponent(results[2].replace(/\+/g, ' '));
-	}
-}
-
 export function getAttribute(dom: Node | string | undefined, attributeName: string): string | null {
 	return (dom as HTMLElement)?.getAttribute(attributeName);
 }
@@ -42,5 +14,64 @@ export function setNodeValue(dom: Node | null | undefined, value: any): void {
 	const element = dom as HTMLElement;
 	if (element) {
 		element.innerHTML = value;
+	}
+}
+
+export function canHaveBackgroundImage(element: Element): boolean {
+	const style = window.getComputedStyle(element);
+	return style.backgroundImage !== 'none';
+}
+
+export function isImageElement(element: HTMLElement | Element): boolean {
+	const { tagName } = element;
+	switch (tagName) {
+		case 'IMG':
+		case 'OBJECT':
+		case 'EMBED':
+		case 'CANVAS':
+		case 'PICTURE':
+			return true;
+		default:
+			return canHaveBackgroundImage(element);
+	}
+}
+
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-case-declarations */
+export function setNewImageSource(element: Element, newSource: string): void {
+	const { tagName } = element;
+
+	switch (tagName) {
+		case 'IMG':
+			(element as HTMLImageElement).src = newSource;
+			break;
+		case 'OBJECT':
+		case 'EMBED':
+			(element as HTMLEmbedElement).src = newSource;
+			break;
+		case 'CANVAS':
+			const ctx = (element as HTMLCanvasElement).getContext('2d');
+			const img = new Image();
+			img.onload = () => {
+				if (ctx) {
+					ctx.clearRect(0, 0, element.clientWidth, element.clientHeight);
+					ctx.drawImage(img, 0, 0);
+				}
+			};
+			img.src = newSource;
+			break;
+		case 'PICTURE':
+			const imgTag = element.querySelector('img');
+			if (imgTag) {
+				(imgTag as HTMLImageElement).src = newSource;
+			}
+			const sourceTags = element.querySelectorAll('source');
+			sourceTags.forEach((sourceTag: HTMLSourceElement) => {
+				sourceTag.srcset = newSource;
+			});
+			break;
+		default:
+			(element as HTMLElement).style.backgroundImage = `url(${newSource})`;
+			break;
 	}
 }

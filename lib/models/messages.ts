@@ -1,9 +1,20 @@
+export enum EditorSource {
+	VisualEditor = 'visual-editor'
+}
+
 export enum Events {
 	IframeConnected = 'IFRAME_CONNECTED',
 	FieldClicked = 'FIELD_CLICKED',
 	UnknownEntity = 'UNKNOWN_ENTITY',
 	UrlChanged = 'URL_CHANGED',
-	EntryUpdate = 'ENTRY_UPDATE'
+	EntryUpdate = 'ENTRY_UPDATE',
+	SwitchToPageEditingMode = 'SWITCH_TO_PAGE_EDITING',
+	ExitPageEditingMode = 'EXIT_PAGE_EDITING'
+}
+
+export enum FieldTypes {
+	Default = 'DEFAULT',
+	Media = 'MEDIA'
 }
 
 export interface IframeConnectedMessage {
@@ -12,8 +23,13 @@ export interface IframeConnectedMessage {
 	fields: number;
 }
 
+export interface ExitEditingModeMessage {
+	event: Events.ExitPageEditingMode;
+}
+
 export interface FieldClickMessage {
 	event: Events.FieldClicked;
+	fieldType: FieldTypes.Default;
 	field: string;
 	entryId: string;
 	language?: string;
@@ -29,6 +45,11 @@ export interface UrlChangedMessage {
 	event: Events.UrlChanged;
 }
 
+export interface SwitchToPageEditingModeMessage {
+	event: Events.SwitchToPageEditingMode;
+	value: boolean;
+}
+
 export interface EntryUpdateMessage {
 	event: Events.EntryUpdate;
 	field: string;
@@ -42,13 +63,16 @@ export type Message =
 	| FieldClickMessage
 	| UnknownEntityMessage
 	| UrlChangedMessage
-	| EntryUpdateMessage;
+	| EntryUpdateMessage
+	| SwitchToPageEditingModeMessage;
 
 export type OutgoingMessage = Message & {
-	from: 'xp-editor';
+	from: EditorSource.VisualEditor;
 	location: string;
 };
 
-export type IncomingMessage = EntryUpdateMessage & {
-	from: 'xp-editor';
-};
+export type IncomingMessage =
+	| EntryUpdateMessage
+	| (ExitEditingModeMessage & {
+			from: EditorSource.VisualEditor;
+	  });

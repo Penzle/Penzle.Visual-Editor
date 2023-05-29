@@ -1,10 +1,11 @@
-import { getAttribute, getNodeValue, setAttribute, setNodeValue } from '../utilities';
+import { getAttribute, getNodeValue, isImageElement, setAttribute, setNodeValue } from '../utilities';
 import {
 	BUTTON_APPLY_ID,
 	BUTTON_CANCEL_ID,
 	EntryUpdateMessage,
 	Events,
 	FieldClickMessage,
+	FieldTypes,
 	Message,
 	TOOLTIP_IDENTIFY,
 	TOOLTIP_OVERLAY_ID,
@@ -28,9 +29,9 @@ export class EditorTooltip {
 
 	private activeFieldValue: any | undefined;
 
-	tooltip: TooltipElement;
+	private isPageEditingMode = false;
 
-	isPageEditingMode = false;
+	tooltip: TooltipElement;
 
 	constructor() {
 		this.tooltip = new TooltipElement();
@@ -43,6 +44,11 @@ export class EditorTooltip {
 
 	bindOnEdit(callback: EditCallback): void {
 		this.onEditCallback = callback;
+	}
+
+	setPageEditingMode(value: boolean): void {
+		this.leaveContentEditMode();
+		this.isPageEditingMode = value;
 	}
 
 	private createTooltip(): void {
@@ -109,29 +115,29 @@ export class EditorTooltip {
 	private enterContentEditMode(): void {
 		if (this.activeField == null) return;
 
-		if (this.isPageEditingMode) {
-			this.onEditCallback?.({
-				event: Events.FieldClicked,
-				field: getAttribute(this.selectedField, TagAttributes.FIELD_NAME),
-				entryId: getAttribute(this.selectedField, TagAttributes.ENTRY_ID),
-				language: getAttribute(this.selectedField, TagAttributes.LANGUAGE)
-			} as FieldClickMessage);
-		} else {
+		if (isImageElement(this.activeField)) {
+			this.onEditCallback?.(this.getEventClickMessage(FieldTypes.Media));
+			return;
+		}
+
+		this.onEditCallback?.(this.getEventClickMessage(FieldTypes.Default));
+
+		if (!this.isPageEditingMode) {
 			this.selectedField = this.activeField;
 			this.activeFieldValue = getNodeValue(this.selectedField);
-			this.handleFieldType();
-		}
-	}
-
-	private handleFieldType(): void {
-		if (this.activeField == null) return;
-
-		if (this.activeField.tagName === 'IMG') {
-			// $penzle.mediaModule.showMediaPicker();
-		} else {
 			this.tooltip.setEditMode();
 			this.toggleInPageEditing(true);
 		}
+	}
+
+	private getEventClickMessage(fieldTypes: FieldTypes): FieldClickMessage {
+		return {
+			event: Events.FieldClicked,
+			fieldType: fieldTypes,
+			field: getAttribute(this.activeField, TagAttributes.FIELD_NAME),
+			entryId: getAttribute(this.activeField, TagAttributes.ENTRY_ID),
+			language: getAttribute(this.activeField, TagAttributes.LANGUAGE)
+		} as FieldClickMessage;
 	}
 
 	private saveContent(): void {
@@ -193,11 +199,6 @@ export class EditorTooltip {
 		overlay.style.setProperty('left', `${left}px`);
 		overlay.style.setProperty('visibility', 'visible');
 	}
-
-	// updateMedia(mediaItem: { url: string }): void {
-	// 	this.selectedField!.setAttribute('src', mediaItem.url);
-	// 	this.deselectField();
-	// }
 
 	private deselectField(): void {
 		this.selectedField = undefined;

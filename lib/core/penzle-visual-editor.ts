@@ -1,11 +1,12 @@
-import { Events, TagAttributes, EditorSettings } from '../models';
+import { Events, TagAttributes, EditorSettings, EditorSource } from '../models';
 import { detectIframeEnvironment, monitorUrlChanges, sendMessageToEditor } from '../utilities';
 import { EditorTooltip } from './editor-tooltip';
 import { LiveUpdates } from './live-updates';
 import { PageEditing } from './page-editing';
+import '../styles/tooltip.scss';
 
-export class PenzleExperienceEditor {
-	private static instance: PenzleExperienceEditor | null = null;
+export class PenzleVisualEditor {
+	private static instance: PenzleVisualEditor | null = null;
 
 	private initialized = false;
 
@@ -19,14 +20,14 @@ export class PenzleExperienceEditor {
 
 	private pageLiveUpdatesEnabled = true;
 
-	static getInstance(settings?: EditorSettings): PenzleExperienceEditor {
-		if (!PenzleExperienceEditor.instance) {
-			PenzleExperienceEditor.instance = new PenzleExperienceEditor();
+	static create(settings?: EditorSettings): PenzleVisualEditor {
+		if (!PenzleVisualEditor.instance) {
+			PenzleVisualEditor.instance = new PenzleVisualEditor();
 		}
 
-		PenzleExperienceEditor.instance.initialize(settings);
+		PenzleVisualEditor.instance.initialize(settings);
 
-		return PenzleExperienceEditor.instance;
+		return PenzleVisualEditor.instance;
 	}
 
 	initialize({ enablePageEditing, enablePageLiveUpdates }: EditorSettings = {}): void {
@@ -35,10 +36,8 @@ export class PenzleExperienceEditor {
 		}
 
 		if (!this.isIframeEnvironment()) {
-			this.pageLiveUpdatesEnabled = true;
-
-			// this.pageLiveUpdatesEnabled = false;
-			// return null;
+			this.pageLiveUpdatesEnabled = false;
+			return;
 		}
 
 		this.tooltip = new EditorTooltip();
@@ -94,16 +93,22 @@ export class PenzleExperienceEditor {
 
 		if (this.pageLiveUpdatesEnabled) {
 			this.liveUpdatesMode = new LiveUpdates();
+			this.tooltip?.bindOnEdit(this.liveUpdatesMode.receivedOutgoingMessage);
 			this.tooltip?.bindOnSave(this.liveUpdatesMode.receivedOutgoingMessage);
 		}
 	}
 
 	private handleMessageEvent(event: MessageEvent) {
-		if (typeof event.data !== 'object' || !event.data) return;
-		if (event.data.from !== 'xp-editor') return;
+		if (typeof event.data !== 'object' || !event.data || !PenzleVisualEditor.instance) return;
+		if (event.data.from !== EditorSource.VisualEditor) return;
 
-		if (this.pageLiveUpdatesEnabled) {
-			this.liveUpdatesMode?.receivedIncomingMessage(event.data);
+		const { instance } = PenzleVisualEditor;
+		if (event.data.event === Events.SwitchToPageEditingMode && instance.tooltip && instance.pageEditingMode) {
+			instance.tooltip.setPageEditingMode(instance.pageEditingMode.setPageEditingEnabled(event.data));
+		}
+
+		if (instance.pageLiveUpdatesEnabled) {
+			instance.liveUpdatesMode?.receivedIncomingMessage(event.data);
 		}
 	}
 }
