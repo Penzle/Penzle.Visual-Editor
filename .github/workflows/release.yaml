@@ -22,6 +22,6 @@ jobs:
       run: npm run build:all
     - name: Release
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB }}
-        NPM_TOKEN: ${{ secrets.NPM }}
+        GITHUB_TOKEN: ${{ secrets.GAC }}
+        NPM_TOKEN: ${{ secrets.GAC }}
       run: npm run semantic-release
