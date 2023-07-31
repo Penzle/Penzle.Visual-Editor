@@ -6,19 +6,19 @@ import { PageEditing } from './page-editing';
 import '../styles/tooltip.scss';
 
 export class PenzleVisualEditor {
-	private static instance: PenzleVisualEditor | null = null;
+	static instance: PenzleVisualEditor | null = null;
 
 	private initialized = false;
 
-	private pageEditingMode: PageEditing | null = null;
+	pageEditingMode: PageEditing | null = null;
 
-	private liveUpdatesMode: LiveUpdates | null = null;
+	liveUpdatesMode: LiveUpdates | null = null;
 
-	private tooltip: EditorTooltip | null = null;
+	tooltip: EditorTooltip | null = null;
 
-	private pageEditingEnabled = true;
+	pageEditingEnabled = true;
 
-	private pageLiveUpdatesEnabled = true;
+	pageLiveUpdatesEnabled = true;
 
 	static create(settings?: EditorSettings): PenzleVisualEditor {
 		if (!PenzleVisualEditor.instance) {
@@ -65,24 +65,38 @@ export class PenzleVisualEditor {
 		this.initialized = true;
 	}
 
+	toggleInspectorMode(enablePageEditing?: boolean) {
+		if (typeof enablePageEditing === 'boolean') {
+			this.pageEditingEnabled = enablePageEditing;
+		}
+	}
+
+	toggleLiveUpdates(enablePageLiveUpdates?: boolean) {
+		if (typeof enablePageLiveUpdates === 'boolean') {
+			this.pageLiveUpdatesEnabled = enablePageLiveUpdates;
+		}
+	}
+
+	handleMessageEvent(event: MessageEvent) {
+		if (typeof event.data !== 'object' || !event.data || !PenzleVisualEditor.instance) return;
+		if (event.data.from !== EditorSource.VisualEditor) return;
+
+		const { instance } = PenzleVisualEditor;
+		if (event.data.event === Events.SwitchToPageEditingMode && instance.tooltip && instance.pageEditingMode) {
+			instance.tooltip.setPageEditingMode(instance.pageEditingMode.setPageEditingEnabled(event.data));
+		}
+
+		if (instance.pageLiveUpdatesEnabled) {
+			instance.liveUpdatesMode?.receivedIncomingMessage(event.data);
+		}
+	}
+
 	private isBrowserEnvironment(): boolean {
 		return typeof window !== 'undefined';
 	}
 
 	private isIframeEnvironment(): boolean {
 		return detectIframeEnvironment();
-	}
-
-	private toggleInspectorMode(enablePageEditing?: boolean) {
-		if (typeof enablePageEditing === 'boolean') {
-			this.pageEditingEnabled = enablePageEditing;
-		}
-	}
-
-	private toggleLiveUpdates(enablePageLiveUpdates?: boolean) {
-		if (typeof enablePageLiveUpdates === 'boolean') {
-			this.pageLiveUpdatesEnabled = enablePageLiveUpdates;
-		}
 	}
 
 	private setupLivePreviewPlugins() {
@@ -95,20 +109,6 @@ export class PenzleVisualEditor {
 			this.liveUpdatesMode = new LiveUpdates();
 			this.tooltip?.bindOnEdit(this.liveUpdatesMode.receivedOutgoingMessage);
 			this.tooltip?.bindOnSave(this.liveUpdatesMode.receivedOutgoingMessage);
-		}
-	}
-
-	private handleMessageEvent(event: MessageEvent) {
-		if (typeof event.data !== 'object' || !event.data || !PenzleVisualEditor.instance) return;
-		if (event.data.from !== EditorSource.VisualEditor) return;
-
-		const { instance } = PenzleVisualEditor;
-		if (event.data.event === Events.SwitchToPageEditingMode && instance.tooltip && instance.pageEditingMode) {
-			instance.tooltip.setPageEditingMode(instance.pageEditingMode.setPageEditingEnabled(event.data));
-		}
-
-		if (instance.pageLiveUpdatesEnabled) {
-			instance.liveUpdatesMode?.receivedIncomingMessage(event.data);
 		}
 	}
 }
