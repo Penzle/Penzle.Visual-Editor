@@ -1,9 +1,4 @@
-[![npm version](https://badge.fury.io/js/@penzle%2Fdelivery-sdk.svg)](https://badge.fury.io/js/@penzle%2Fdelivery-sdk)
-[![Build](https://github.com/Penzle/Penzle.Delivery.SDK.JS/actions/workflows/test-and-release.yaml/badge.svg)](https://github.com/Penzle/Penzle.Delivery.SDK.JS/actions/workflows/test-and-release.yaml)
-[![Known Vulnerabilities](https://snyk.io/test/github/Penzle/Penzle.Delivery.SDK.JS/badge.svg)](https://snyk.io/test/github/Penzle/Penzle.Delivery.SDK.JS)
-[![GitHub license](https://img.shields.io/github/license/Penzle/Penzle.Delivery.SDK.JS.svg)](https://github.com/Penzle/Penzle.Delivery.SDK.JS)
-![Gzip browser bundle](https://img.badgesize.io/https://cdn.jsdelivr.net/npm/@penzle/delivery-sdk@latest/dist/bundles/penzle-delivery.min.js?compression=gzip)
-![W3C](https://img.shields.io/badge/w3c-validated-brightgreen)
+[![Build](https://github.com/Penzle/Penzle.Visual-Editor/actions/workflows/test-and-release.yaml/badge.svg)](https://github.com/Penzle/Penzle.Delivery.SDK.JS/actions/workflows/test-and-release.yaml)
 [![Discord](https://img.shields.io/discord/991274367197663242?label=Discord&logo=Discord&logoColor=white)](https://discord.gg/2aK8pF6WK2)
 
 # Penzle Visual Editor  
