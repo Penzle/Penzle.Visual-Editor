@@ -18,8 +18,6 @@ jobs:
         node-version: 18
     - name: Install dependencies
       run: npm i
-    - name: Install Crhome
-      run: npm i -D karma-chrome-launcher
     - name: Build
       run: npm run build:all
     - name: Release
