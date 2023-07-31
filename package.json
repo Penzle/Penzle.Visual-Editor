@@ -28,6 +28,9 @@
         "type": "git",
         "url": "git+https://github.com/Penzle/Penzle.Visual-Editor.git"
     },
+     "publishConfig": {
+    "access": "public"
+    },
     "keywords": [
         "Penzle",
         "Penzle Visual Editor"
