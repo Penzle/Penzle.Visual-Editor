@@ -5,7 +5,7 @@
 
 Penzle Visual Editor with the in-page editor is a powerful combination of features that empowers content creators and editors to visualize and edit their content in real-time, directly within the context of their live website or application. With this seamless integration, users can preview and make on-the-fly adjustments to their content, ensuring a smooth and efficient content management process.
 
-## Installation
+## Installation 
 
 To install the JavaScript Visual Editor SDK, you can either use `npm` or take advantage of global CDNs like `jsdelivr`.
 
