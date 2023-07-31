@@ -1,4 +1,4 @@
-[![Build](https://github.com/Penzle/Penzle.Visual-Editor/actions/workflows/release.yaml/badge.svg)](https://github.com/Penzle/Penzle.Visual-Editor/actions/workflows/release.yaml)
+[![Build](https://github.com/Penzle/Penzle.Visual-Editor/actions/workflows/release.yaml/badge.svg)](https://github.com/Penzle/Penzle.Visual-Editor/actions/workflows/release.yaml) 
 [![Discord](https://img.shields.io/discord/991274367197663242?label=Discord&logo=Discord&logoColor=white)](https://discord.gg/2aK8pF6WK2)
 
 # Penzle Visual Editor  
