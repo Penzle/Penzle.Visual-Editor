@@ -3,7 +3,6 @@ import { detectIframeEnvironment, monitorUrlChanges, sendMessageToEditor } from 
 import { EditorTooltip } from './editor-tooltip';
 import { LiveUpdates } from './live-updates';
 import { PageEditing } from './page-editing';
-import '../styles/tooltip.scss';
 
 export class PenzleVisualEditor {
 	static instance: PenzleVisualEditor | null = null;

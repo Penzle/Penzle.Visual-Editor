@@ -1,5 +1,6 @@
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isProd = (args) => {
 	return args.mode === 'production';
@@ -7,13 +8,14 @@ const isProd = (args) => {
 
 const outputFolder = (args) => path.resolve(__dirname, 'dist/bundles');
 const bundleFilename = (args) => {
-	return 'penzle-visual-editor' + (isProd(args) ? '.min.js' : '.js');
+	return isProd(args) ? '[name].min.js' : '[name].js';
 };
 
 module.exports = (env, args) => ({
 	mode: args.mode,
 	entry: {
-		index: './lib/index.ts'
+		index: './lib/index.ts',
+		'penzle-visual-editor': './lib/styles/tooltip.scss'
 	},
 	resolve: {
 		extensions: ['.ts', '.js']
@@ -40,10 +42,10 @@ module.exports = (env, args) => ({
 				test: /\.css$/, // Add this rule
 				use: ['style-loader', 'css-loader']
 			},
-			// Add this rule if you're using Sass
 			{
 				test: /\.scss$/,
-				use: ['style-loader', 'css-loader', 'sass-loader']
+				include: [path.resolve(__dirname, 'lib/styles')], // Pointing to your SCSS file location
+				use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
 			}
 		]
 	},
@@ -52,12 +54,28 @@ module.exports = (env, args) => ({
 		maxEntrypointSize: 1000000,
 		maxAssetSize: 1000000
 	},
+	optimization: {
+		splitChunks: {
+			cacheGroups: {
+				styles: {
+					name: 'styles',
+					test: /\.css$/,
+					chunks: 'all',
+					enforce: true
+				}
+			}
+		}
+	},
 	plugins: [
 		new BundleAnalyzerPlugin({
 			generateStatsFile: true,
 			analyzerMode: 'json',
 			reportFilename: (isProd(args) ? 'report.min' : 'report') + '.json',
 			statsFilename: (isProd(args) ? 'stats.min' : 'stats') + '.json'
+		}),
+		new MiniCssExtractPlugin({
+			filename: isProd(args) ? '[name].min.css' : '[name].css',
+			chunkFilename: isProd(args) ? '[id].min.css' : '[id].css'
 		})
 	]
 });
